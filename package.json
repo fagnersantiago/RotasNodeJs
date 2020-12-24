@@ -1,0 +1,17 @@
+{
+  "name": "crudNode",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "ls": "^0.2.1",
+    "main": "index.js",
+    "node": "^15.4.0",
+    "nodemon": "^2.0.6",
+    "uuidv4": "^6.2.6"
+  }
+}
