@@ -7,6 +7,18 @@ app.use(express.json());
 
 const projects = [];
 
+function handleLogRequest(request, response, next) {
+  const { method, url } = request;
+
+  const logRequest = `[${method.toUpperCase()} ${url}]`;
+
+  console.log(logRequest);
+
+  return next();
+}
+
+app.use(handleLogRequest);
+
 app.get("/", (request, response) => {
   // const {title, owner} = request.query;
 
@@ -50,7 +62,6 @@ app.put("/projects/:id", (request, response) => {
   projects[projectIndex] = project;
 
   return response.json(project);
-
 });
 
 app.delete("/projects/:id", (request, response) => {
@@ -67,7 +78,6 @@ app.delete("/projects/:id", (request, response) => {
   projects.splice(projectId, 1);
 
   return response.status(204).send();
-  
 });
 
 app.listen(3333, () => {
