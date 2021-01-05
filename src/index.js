@@ -3,10 +3,9 @@ const app = express();
 const Users = require("./user");
 const mongoose = require("mongoose");
 
-
 app.use(express.json());
 
-const url = "mongodb+srv://admin:fagner060688@cluster0.jvjxd.mongodb.net/<dbname>?retryWrites=true&w=majority";
+const url = "mongodb+srv://admin:<password>@cluster0.jvjxd.mongodb.net/<dbname>?retryWrites=true&w=majority";
 
 const option = { poolSize: 5, useNewUrlParser: true, useUnifiedTopology: true };
 
