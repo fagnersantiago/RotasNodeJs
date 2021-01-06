@@ -2,8 +2,8 @@ const express = require("express");
 const app = express();
 const Users = require("./src/user");
 const bcrypt = require("bcrypt");
-const database = require ('./src/database/index');
-
+const database = require("./src/database/index");
+const user = require("./src/user");
 
 app.use(express.json());
 
@@ -21,84 +21,62 @@ function handleLogRequest(request, response, next) {
 
 //app.use(handleLogRequest);
 
-app.get("/", (request, response) => {
-  Users.find({}, (err, data) => {
-    if (err) return response.json("user not found");
+app.get("/", async (request, response) => {
+  try {
+    const user = await Users.find({});
 
-    return response.json(data);
-  });
+    return response.json(user);
+  } catch (err) {
+    return response.json({ err: "User not found" });
+  }
 });
 
-app.post("/user", handleLogRequest, (request, response) => {
+app.post("/user", async (request, response) => {
   const { email, password } = request.body;
 
   if (!email || !password) return response.json("invalid data");
+  if (await Users.findOne({ email }))
 
-  Users.findOne({ email }, (err, data) => {
-    if (err) return response.json("error");
-    if (data) return response.json("user already exist");
+    return response.json({ message: "User already exist" });
 
-    Users.create(request.body, (err, data) => {
-      if (err) return response.json(err);
+  try {
 
-      return response.json(data);
-    });
-  });
+    const user = await Users.create({ email, password });
+
+    return response.json(user);
+
+  } catch (err) {
+
+    return response.json({ err: "Error" });
+
+  }
 });
 
-app.post("/user/auth", (request, response) => {
+app.post("/user/auth", async (request, response) => {
   const { email, password } = request.body;
 
   if (!email || !password)
+
     return response.json({ message: "unsufficient data" });
 
-  Users.findOne({ email }, (err, data) => {
-    if (err) return response.json({ message: "Error fetching data" });
-    if (!data) return response.json({ message: "User Unregistered" });
+    try {
+ 
+      const user = await Users.findOne({ email }).select('+password');
 
-    bcrypt.compare(password, data.password, (err, same) => {
-      if (!same) return response.json({ message: "Error authenticate" });
+      if(!user) return response.json({message:"User Unregistered"});
 
-      return response.json(data);
-    });
-  }).select("+password");
+     const comparePassword = await bcrypt.compare(password, user.password) 
+
+     if(!comparePassword) return response.json({message:'Erro authenticated'})
+
+       return response.json(user);
+
+    } catch(err){
+
+      return response.json({err:"User does not exist"});
+    }
 });
 
-// app.put("/projects/:id", handleLogRequest,(request, response) => {
-//   const { id } = request.params;
-//   const { title, owner } = request.body;
 
-//   const projectIndex = projects.findIndex((project) => project.id === id);
-
-//   if (projectIndex === -1) {
-//     return response.status(400).json({ error: "project not found." });
-//   }
-
-//   const project = {
-//     id,
-//     title,
-//     owner,
-//   };
-
-//   projects[projectIndex] = project;
-
-//   return response.json(project);
-// });
-
-// app.delete("/projects/:id", (request, response) => {
-//   const { id } = request.params;
-
-//   const projectId = projects.findIndex((project) => project.id === id);
-
-//   if (projectId !== id) {
-//     return response
-//       .status(400)
-//       .json({ error: "Project not found or Id does not exist" });
-//   }
-
-//   projects.splice(projectId, 1);
-
-//   return response.status(204).send();
-// });
 
 module.exports = app;
