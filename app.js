@@ -1,29 +1,12 @@
 const express = require("express");
 const app = express();
-const Users = require("./user");
-const mongoose = require("mongoose");
+const Users = require("./src/user");
+const bcrypt = require("bcrypt");
+const database = require ('./src/database/index');
+
 
 app.use(express.json());
 
-const url = "mongodb+srv://admin:<password>@cluster0.jvjxd.mongodb.net/<dbname>?retryWrites=true&w=majority";
-
-const option = { poolSize: 5, useNewUrlParser: true, useUnifiedTopology: true };
-
-mongoose.connect(url, option);
-
-mongoose.connection.on("error", (err) => {
-  console.log("fail connection" + err);
-});
-
-mongoose.connection.on("disconnect", () => {
-  console.log("Disconnect ");
-});
-
-mongoose.connection.on("connected", () => {
-  console.log("connected!");
-});
-
-module.exports = mongoose;
 // const projects = [];
 
 function handleLogRequest(request, response, next) {
@@ -63,6 +46,24 @@ app.post("/user", handleLogRequest, (request, response) => {
   });
 });
 
+app.post("/user/auth", (request, response) => {
+  const { email, password } = request.body;
+
+  if (!email || !password)
+    return response.json({ message: "unsufficient data" });
+
+  Users.findOne({ email }, (err, data) => {
+    if (err) return response.json({ message: "Error fetching data" });
+    if (!data) return response.json({ message: "User Unregistered" });
+
+    bcrypt.compare(password, data.password, (err, same) => {
+      if (!same) return response.json({ message: "Error authenticate" });
+
+      return response.json(data);
+    });
+  }).select("+password");
+});
+
 // app.put("/projects/:id", handleLogRequest,(request, response) => {
 //   const { id } = request.params;
 //   const { title, owner } = request.body;
@@ -99,9 +100,5 @@ app.post("/user", handleLogRequest, (request, response) => {
 
 //   return response.status(204).send();
 // });
-
-app.listen(3333, () => {
-  console.log("🚀 Back-end started on port 3333!");
-});
 
 module.exports = app;

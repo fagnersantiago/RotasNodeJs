@@ -1,10 +1,10 @@
 {
   "name": "crudNode",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon "
   },
   "dependencies": {
     "bcrypt": "^5.0.0",
