@@ -1,7 +1,7 @@
 
 const mongoose = require("mongoose");
 
-const url = "mongodb+srv://admin:<passoword>@cluster0.jvjxd.mongodb.net/<dbname>?retryWrites=true&w=majority";
+const url = "mongodb+srv://admin:<password>@cluster0.jvjxd.mongodb.net/<dbname>?retryWrites=true&w=majority";
 
 const option = { poolSize: 5, useNewUrlParser: true, useUnifiedTopology: true };
 
