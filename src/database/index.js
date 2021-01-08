@@ -1,7 +1,8 @@
 
 const mongoose = require("mongoose");
+const connect = require("../config/config");
 
-const url = "mongodb+srv://admin:<password>@cluster0.jvjxd.mongodb.net/<dbname>?retryWrites=true&w=majority";
+const url = connect.stringDbConnection ;
 
 const option = { poolSize: 5, useNewUrlParser: true, useUnifiedTopology: true };
 
