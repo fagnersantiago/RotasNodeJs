@@ -5,7 +5,7 @@ const config = () => {
     case "dev":
       return {
         stringDbConnection:
-          "mongodb+srv://admin:<password>@cluster0.jvjxd.mongodb.net/<dbname>?retryWrites=true&w=majority",
+          "mongodb+srv://admin:@cluster0.jvjxd.mongodb.net/<dbname>?retryWrites=true&w=majority",
       
           jwt_pass:'secret',
           jwt_expires_in:'7d'

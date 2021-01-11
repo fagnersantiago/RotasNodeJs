@@ -6,7 +6,6 @@ const auth = require("./src/middlewares/index");
 const database = require("./src/database/index");
 const jwt = require("jsonwebtoken");
 const config = require("./src/config/config");
-const { response } = require("express");
 
 
 app.use(express.json());
@@ -46,7 +45,6 @@ app.post("/user", async (request, response) => {
 app.post("/user/auth", async (request, response) => {
   const { email, password } = request.body;
 
-  
   if (!email || !password)
     return response.json({ message: "unsufficient data" });
 
@@ -57,7 +55,7 @@ app.post("/user/auth", async (request, response) => {
       return response.status(404).json({ message: "User Unregistered" });
 
     const comparePassword = await bcrypt.compare(password, user.password);
-    
+
     if (!comparePassword)
       return response.status(401).json({ message: "Erro authenticated" });
 
@@ -65,6 +63,22 @@ app.post("/user/auth", async (request, response) => {
   } catch (err) {
     return response.status(404).json({ err: "User does not exist" });
   }
+});
+
+app.put("/user/:id", async (request, response) => {
+   
+  await Users.findById(request.params.id, (err, user) => {
+    const { email, password } = request.body;
+    if (err) response.status(404).send("id not found");
+
+    user.email = email;
+    user.password = password;
+
+    user.save((err) => {
+      if (err) response.status(404).send("error saved" + err);
+      response.send("user salved");
+    });
+  });
 });
 
 app.delete("/user/:id", async (request, response) => {
